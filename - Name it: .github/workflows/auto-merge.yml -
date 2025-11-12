@@ -1,0 +1,28 @@
+name: Merge Dev into Main
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Fetch dev branch
+        run: git fetch origin dev
+
+      - name: Merge dev into main
+        run: |
+          git merge origin/dev --no-ff || echo "::error::Merge conflict detected"
+          git push origin main
